@@ -83,8 +83,15 @@ This project contains production-ready agent skills that work together to create
 4. **Gmail Watcher Agent** - Monitors Gmail inbox, auto-replies, and saves emails to vault
 5. **Email Sender Agent** - Sends emails via SMTP with environment credentials
 6. **LinkedIn Auto-Post Agent** - Automates LinkedIn posting with browser automation
-7. **MCP Executor Agent** - Executes external actions and integrations
-8. **Gold Scheduler Agent** - Orchestrates automated background execution
+7. **Twitter/X Post Agent** - Automated Twitter posting with thread support
+8. **Social Meta Agent** - Facebook and Instagram posting automation
+9. **Social Summary Agent** - Centralized social media activity tracking
+10. **Accounting Manager Agent** - Financial tracking and ledger management
+11. **CEO Briefing Agent** - Automated weekly executive summary reports
+12. **Error Recovery Agent** - Automated error handling and retry system
+13. **Ralph Loop Agent** - Autonomous task execution loop with safety features
+14. **MCP Executor Agent** - Executes external actions and integrations
+15. **Gold Scheduler Agent** - Orchestrates automated background execution
 
 ## 🏆 Gold Tier Enhancements
 
@@ -92,11 +99,15 @@ What makes this Gold Tier:
 
 - **🎨 Beautiful Terminal UI** - Rich library integration with colorful output, progress bars, and styled panels
 - **📧 Advanced Email Processing** - Full Gmail integration with IMAP/SMTP, auto-replies, and email-to-task pipeline
-- **🔄 Complete Automation Pipeline** - Email → Task → Plan → Approval → Action workflow
+- **🐦 Multi-Platform Social Media** - Twitter/X, Facebook, Instagram, and LinkedIn automation
+- **📊 Social Media Tracking** - Centralized logging and analytics across all platforms
+- **💰 Financial Management** - Complete accounting system with ledger and reporting
+- **📈 Executive Reporting** - Automated weekly CEO briefings with key metrics
+- **🔄 Error Recovery System** - Automatic error detection, quarantine, and retry logic
+- **🤖 Autonomous Execution** - Ralph Loop for continuous task processing with safety features
 - **⚡ Production-Ready Scheduling** - Windows Task Scheduler and Cron integration for 24/7 operation
 - **🛡️ Enterprise Security** - App Password support, credential management, comprehensive logging
 - **📊 Enhanced Monitoring** - Heartbeat logging, status dashboards, and detailed activity tracking
-- **🎯 Multi-Channel Integration** - Gmail, LinkedIn, and extensible MCP executor framework
 - **💪 Robust Error Handling** - Graceful degradation, retry logic, and comprehensive error recovery
 
 ### Feature Comparison
@@ -106,12 +117,20 @@ What makes this Gold Tier:
 | Task Planning | ✅ | ✅ | ✅ |
 | Vault Monitoring | ✅ | ✅ | ✅ |
 | Human Approval | ❌ | ✅ | ✅ |
-| Email Integration | ❌ | ❌ | ✅ |
-| Gmail Auto-Reply | ❌ | ❌ | ✅ |
+| Email Integration | ❌ | ✅ | ✅ |
+| Gmail Auto-Reply | ❌ | ✅ | ✅ |
 | LinkedIn Posting | ❌ | ✅ | ✅ |
+| Twitter/X Posting | ❌ | ❌ | ✅ |
+| Facebook Posting | ❌ | ❌ | ✅ |
+| Instagram Posting | ❌ | ❌ | ✅ |
+| Social Media Tracking | ❌ | ❌ | ✅ |
+| Accounting Manager | ❌ | ❌ | ✅ |
+| CEO Briefing | ❌ | ❌ | ✅ |
+| Error Recovery System | ❌ | ❌ | ✅ |
+| Autonomous Loop (Ralph) | ❌ | ❌ | ✅ |
 | Colorful Terminal UI | ❌ | ❌ | ✅ |
 | Background Scheduling | ❌ | ✅ | ✅ |
-| Email-to-Task Pipeline | ❌ | ❌ | ✅ |
+| Email-to-Task Pipeline | ❌ | ✅ | ✅ |
 | MCP Executor | ❌ | ✅ | ✅ |
 | Production Logging | Basic | Advanced | Enterprise |
 | Error Recovery | Basic | Good | Excellent |
@@ -174,13 +193,29 @@ F:\FTEs\Gold Tier\
 │       │   └── SKILL.md
 │       ├── human-approval/
 │       │   └── SKILL.md
+│       ├── gmail-watcher/
+│       │   └── SKILL.md
+│       ├── linkedin-post/
+│       │   └── SKILL.md
+│       ├── twitter-post/
+│       │   └── SKILL.md
+│       ├── social-meta/
+│       │   └── SKILL.md
+│       ├── social-summary/
+│       │   └── SKILL.md
+│       ├── accounting-manager/
+│       │   └── SKILL.md
+│       ├── ceo-briefing/
+│       │   └── SKILL.md
+│       ├── error-recovery/
+│       │   └── SKILL.md
+│       ├── ralph-loop/
+│       │   └── SKILL.md
 │       ├── mcp-executor/
 │       │   └── SKILL.md
 │       ├── gold-scheduler/
 │       │   └── SKILL.md
-│       ├── linkedin-post/
-│       │   └── SKILL.md
-│       └── gmail-watcher/
+│       └── personal-tasks/
 │           └── SKILL.md
 ├── scripts/
 │   ├── task_planner.py          # Analyzes files & creates plans
@@ -189,18 +224,38 @@ F:\FTEs\Gold Tier\
 │   ├── watch_gmail.py           # Gmail inbox monitor with auto-reply
 │   ├── send_email.py            # Email sender via SMTP
 │   ├── post_linkedin.py         # LinkedIn automation
+│   ├── accounting_manager.py    # Financial tracking system
+│   ├── ceo_briefing.py          # Weekly executive reports
+│   ├── ceo_briefing_scheduler.py # CEO briefing automation
+│   ├── error_recovery.py        # Error handling & retry system
+│   ├── ralph_loop.py            # Autonomous task execution loop
 │   ├── mcp_executor.py          # External action executor
-│   └── run_ai_employee.py       # Scheduler & orchestrator
+│   ├── run_ai_employee.py       # Scheduler & orchestrator
+│   └── integrated_demo.py       # Full system demo
 ├── AI_Employee_Vault/
 │   ├── Inbox/                   # Drop new tasks here
 │   ├── Needs_Action/            # Generated plans appear here
 │   ├── Needs_Approval/          # Approval requests
 │   ├── Done/                    # Completed tasks
+│   ├── Errors/                  # Failed/quarantined files
+│   ├── Plans/                   # Execution plans
+│   ├── Actions/                 # Action items
+│   ├── Accounting/              # Financial ledgers
+│   │   ├── Current_Month.md     # Active accounting ledger
+│   │   └── Archive/             # Historical ledgers
+│   ├── Reports/                 # Generated reports
+│   │   ├── CEO_Weekly.md        # Latest CEO briefing
+│   │   ├── Social_Log.md        # Social media activity log
+│   │   └── twitter_history.json # Twitter post history
 │   ├── Dashboard.md             # System status dashboard
+│   ├── System_Log.md            # System activity log
 │   └── Company_Handbook.md      # Policies & workflows
 ├── logs/
 │   ├── actions.log              # All activity logs
+│   ├── errors.log               # Error tracking log
+│   ├── social.log               # Social media logs
 │   ├── processed.json           # Idempotency tracking
+│   ├── retry_queue.json         # Error recovery queue
 │   ├── page_source.html         # Debug HTML snapshots
 │   └── screenshots/             # Debug screenshots
 ├── .env.example                 # Credentials template
@@ -664,7 +719,200 @@ Incoming Email → Gmail Watcher → Saved to Inbox/ → Vault Watcher → Task 
 5. Task Planner analyzes email content
 6. Creates action plan in `Needs_Action/`
 
-### 7. LinkedIn Auto-Post Agent
+### 7. Twitter/X Auto-Post Agent (Gold Tier NEW!)
+
+**Purpose**: Automate posting to Twitter/X using API v2.
+
+**Setup**:
+```bash
+# Install dependencies
+pip install tweepy python-dotenv
+
+# Configure credentials in .env
+TWITTER_API_KEY=your-api-key
+TWITTER_API_SECRET=your-api-secret
+TWITTER_ACCESS_TOKEN=your-access-token
+TWITTER_ACCESS_TOKEN_SECRET=your-access-token-secret
+TWITTER_BEARER_TOKEN=your-bearer-token
+```
+
+**Usage**:
+```bash
+# Post a tweet
+python scripts/twitter_post.py "Just shipped a new feature! 🚀"
+
+# Post a thread (auto-splits if > 280 chars)
+python scripts/twitter_post.py "Long content that will be split into multiple tweets..." --thread
+```
+
+**Features**:
+- Twitter API v2 integration
+- Character limit validation (280 chars)
+- Automatic thread creation for long content
+- Tweet history tracking
+- Comprehensive error handling
+- Rate limit management
+
+### 8. Social Meta Agent (Gold Tier NEW!)
+
+**Purpose**: Automate posting to Facebook and Instagram.
+
+**Setup**:
+```bash
+# Install dependencies
+pip install requests python-dotenv pillow
+
+# Configure credentials in .env
+META_ACCESS_TOKEN=your-long-lived-access-token
+FACEBOOK_PAGE_ID=your-facebook-page-id
+INSTAGRAM_ACCOUNT_ID=your-instagram-business-account-id
+```
+
+**Usage**:
+```bash
+# Post to Facebook
+python scripts/social_meta.py facebook "Check out our latest update! 🚀"
+
+# Post to Instagram (requires image)
+python scripts/social_meta.py instagram "Beautiful sunset! 🌅 #nature" sunset.jpg
+```
+
+**Features**:
+- Facebook Page posting
+- Instagram Business account posting
+- Image and text support
+- Meta Graph API integration
+- Comprehensive logging
+
+### 9. Accounting Manager Agent (Gold Tier NEW!)
+
+**Purpose**: Track income and expenses with automated ledger management.
+
+**Usage**:
+```bash
+# Add income transaction
+python scripts/accounting_manager.py add \
+  --date 2026-03-04 \
+  --title "Client Payment - ABC Corp" \
+  --type income \
+  --amount 5000.00 \
+  --description "Monthly retainer payment"
+
+# Add expense transaction
+python scripts/accounting_manager.py add \
+  --date 2026-03-04 \
+  --title "Office Supplies" \
+  --type expense \
+  --amount 127.50 \
+  --description "Printer paper and pens"
+
+# Generate summary
+python scripts/accounting_manager.py summary
+
+# Generate weekly summary
+python scripts/accounting_manager.py weekly
+
+# Archive current month
+python scripts/accounting_manager.py archive
+```
+
+**Features**:
+- Income and expense tracking
+- Current_Month.md ledger in AI_Employee_Vault/Accounting/
+- Automatic weekly summaries
+- Monthly archival
+- Financial reports
+- Zero external dependencies
+
+### 10. CEO Briefing Agent (Gold Tier NEW!)
+
+**Purpose**: Generate automated weekly executive summary reports.
+
+**Usage**:
+```bash
+# Generate current week briefing
+python scripts/ceo_briefing.py
+
+# Generate for specific week
+python scripts/ceo_briefing.py --date 2026-02-24
+
+# Start automated scheduler (runs every Monday at 9 AM)
+python scripts/ceo_briefing_scheduler.py
+```
+
+**Features**:
+- Aggregates completed tasks
+- Tracks pending tasks and approvals
+- Counts social media posts
+- Summarizes financial data
+- Calculates system health metrics
+- Generates actionable recommendations
+- Auto-schedules weekly generation
+
+### 11. Error Recovery Agent (Gold Tier NEW!)
+
+**Purpose**: Automated error handling and recovery system.
+
+**Usage**:
+```bash
+# Start error recovery service
+python scripts/error_recovery.py --service
+
+# Process retry queue manually
+python scripts/error_recovery.py --process-queue
+
+# View error statistics
+python scripts/error_recovery.py --stats
+
+# Clear retry queue
+python scripts/error_recovery.py --clear-queue
+```
+
+**As Decorator**:
+```python
+from scripts.error_recovery import with_error_recovery
+
+@with_error_recovery
+def risky_operation(file_path):
+    # Your code that might fail
+    process_file(file_path)
+```
+
+**Features**:
+- Automatic error detection and logging
+- Failed file quarantine to AI_Employee_Vault/Errors/
+- Automatic retry after 5 minutes
+- Retry queue management
+- Error statistics and reporting
+- Background service mode
+
+### 12. Ralph Loop Agent (Gold Tier NEW!)
+
+**Purpose**: Autonomous agent for continuous task execution.
+
+**Usage**:
+```bash
+# Run continuously (monitors every 60 seconds)
+python scripts/ralph_loop.py
+
+# Process one task and exit
+python scripts/ralph_loop.py --single
+
+# Test without making changes
+python scripts/ralph_loop.py --dry-run
+
+# Custom max iterations
+python scripts/ralph_loop.py --max-iterations 10
+```
+
+**Features**:
+- Continuous task monitoring from Needs_Action/
+- Automatic task analysis and planning
+- Risk assessment with human approval for risky tasks
+- Step-by-step execution with verification
+- Error recovery integration
+- Safety limits (max 5 iterations)
+- Dry-run mode for testing
 - Moves completed requests to `Done/` folder
 - Configurable timeout (default: 1 hour)
 
@@ -1424,8 +1672,14 @@ grep "Method.*SUCCESS" logs/actions.log
 **Q: What's the difference between Silver and Gold Tier?**
 A: Gold Tier adds:
 - Beautiful colorful terminal UI with Rich library
-- Full Gmail integration (IMAP/SMTP) with auto-reply
-- Email-to-task pipeline automation
+- Full Gmail integration (IMAP/SMTP) with auto-reply (Silver had basic email)
+- Twitter/X posting with API v2 and thread support
+- Facebook and Instagram posting via Meta Graph API
+- Social media tracking and analytics across all platforms
+- Accounting Manager for financial tracking and ledger management
+- CEO Briefing system for automated weekly executive reports
+- Error Recovery system with automatic retry and quarantine
+- Ralph Loop for autonomous task execution with safety features
 - Enhanced error recovery and retry logic
 - Production-ready 24/7 operation features
 - Advanced monitoring and health checks
@@ -1567,10 +1821,18 @@ A: Yes! The Rich library is highly customizable. Edit the color schemes in each 
 - **Task Planner**: `.claude/skills/task-planner/SKILL.md`
 - **Vault Watcher**: `.claude/skills/vault-watcher/SKILL.md`
 - **Human Approval**: `.claude/skills/human-approval/SKILL.md`
-- **Gmail Watcher**: `.claude/skills/gmail-watcher/SKILL.md` ⭐ NEW
+- **Gmail Watcher**: `.claude/skills/gmail-watcher/SKILL.md`
+- **LinkedIn Post**: `.claude/skills/linkedin-post/SKILL.md`
+- **Twitter/X Post**: `.claude/skills/twitter-post/SKILL.md` ⭐ NEW
+- **Social Meta (Facebook/Instagram)**: `.claude/skills/social-meta/SKILL.md` ⭐ NEW
+- **Social Summary**: `.claude/skills/social-summary/SKILL.md` ⭐ NEW
+- **Accounting Manager**: `.claude/skills/accounting-manager/SKILL.md` ⭐ NEW
+- **CEO Briefing**: `.claude/skills/ceo-briefing/SKILL.md` ⭐ NEW
+- **Error Recovery**: `.claude/skills/error-recovery/SKILL.md` ⭐ NEW
+- **Ralph Loop**: `.claude/skills/ralph-loop/SKILL.md` ⭐ NEW
 - **MCP Executor**: `.claude/skills/mcp-executor/SKILL.md`
 - **Gold Scheduler**: `.claude/skills/gold-scheduler/SKILL.md`
-- **LinkedIn Post**: `.claude/skills/linkedin-post/SKILL.md`
+- **Personal Tasks**: `.claude/skills/personal-tasks/SKILL.md`
 - **Scheduler Setup**: `SCHEDULER_SETUP.md`
 - **Email Setup**: `EMAIL_SETUP.md`
 - **LinkedIn Setup**: `LINKEDIN_SETUP.md`
@@ -1616,12 +1878,19 @@ A: Yes! The Rich library is highly customizable. Edit the color schemes in each 
 | Gmail Watcher | ✅ Complete | Yes | python-dotenv |
 | Email Sender | ✅ Complete | Yes | python-dotenv |
 | LinkedIn Post | ✅ Complete | Yes (with setup) | playwright, python-dotenv |
+| Twitter/X Post | ✅ Complete | Yes | tweepy, python-dotenv |
+| Social Meta (FB/IG) | ✅ Complete | Yes | requests, python-dotenv, pillow |
+| Social Summary | ✅ Complete | Yes | None |
+| Accounting Manager | ✅ Complete | Yes | None |
+| CEO Briefing | ✅ Complete | Yes | None |
+| Error Recovery | ✅ Complete | Yes | None |
+| Ralph Loop | ✅ Complete | Yes | None |
 | MCP Executor | ✅ Complete | Yes | python-dotenv |
 | Gold Scheduler | ✅ Complete | Yes | None |
 
 ## ✅ What's Working (Tested & Verified)
 
-### 🎨 Beautiful Terminal UI (NEW!)
+### 🎨 Beautiful Terminal UI (Gold Tier)
 - ✅ Colorful output with rich library
 - ✅ Eye-catching startup banners with borders
 - ✅ Color-coded messages (green=success, red=error, yellow=warning, cyan=info)
@@ -1694,21 +1963,9 @@ A: Yes! The Rich library is highly customizable. Edit the color schemes in each 
 - ✅ Secure credential storage (never logged)
 
 ### LinkedIn Auto-Post Agent
-- ✅ Moves completed requests to Done/
-- ✅ Timeout exception handling
-- ✅ Priority levels (low/medium/high)
-- ✅ Detailed request context with frontmatter
-- ✅ Command-line and Python API usage
-
-### LinkedIn Auto-Post Agent
 - ✅ Automated login with credentials from .env
 - ✅ CAPTCHA detection with manual intervention prompt
-- ✅ Multiple selector strategies (5 methods):
-  - aria-label locator
-  - Exact text match
-  - JavaScript querySelector
-  - Role-based locator
-  - Filtered div[role='button']
+- ✅ Multiple selector strategies (5 methods)
 - ✅ Keyboard typing for natural content entry
 - ✅ Post button detection scoped to share dialog
 - ✅ Retry logic with exponential backoff (2 retries)
@@ -1718,6 +1975,89 @@ A: Yes! The Rich library is highly customizable. Edit the color schemes in each 
 - ✅ Comprehensive logging with method success tracking
 - ✅ Timeout configuration
 - ✅ Error recovery and cleanup
+
+### Twitter/X Post Agent (Gold Tier NEW!)
+- ✅ Post tweets via Twitter API v2
+- ✅ Character limit validation (280 chars)
+- ✅ Thread support for longer content
+- ✅ Automatic thread splitting
+- ✅ History tracking in twitter_history.json
+- ✅ Comprehensive error handling
+- ✅ Rate limit management
+- ✅ Duplicate detection
+- ✅ Bearer token authentication
+- ✅ Tweet URL generation
+
+### Social Meta Agent (Gold Tier NEW!)
+- ✅ Post to Facebook Pages
+- ✅ Post to Instagram Business accounts
+- ✅ Image and text post support
+- ✅ Meta Graph API integration
+- ✅ Long-lived access token support
+- ✅ Comprehensive logging to logs/social.log
+- ✅ Error handling and retry logic
+- ✅ Rate limit management
+- ✅ Link sharing on Facebook
+- ✅ Instagram container creation and publishing
+
+### Social Summary Agent (Gold Tier NEW!)
+- ✅ Centralized social media activity logging
+- ✅ Multi-platform support (LinkedIn, Facebook, X, Instagram)
+- ✅ Post content tracking with timestamps
+- ✅ URL tracking for published posts
+- ✅ Metadata storage (likes, comments, shares)
+- ✅ Post count statistics by platform
+- ✅ Recent posts retrieval
+- ✅ Summary report generation
+- ✅ Integration with CEO Briefing
+
+### Accounting Manager Agent (Gold Tier NEW!)
+- ✅ Add income and expense transactions
+- ✅ Maintain Current_Month.md ledger
+- ✅ Automatic weekly summary generation
+- ✅ Calculate total income, expenses, and net profit
+- ✅ Archive completed months
+- ✅ Generate financial reports
+- ✅ Transaction search and filtering
+- ✅ Comprehensive logging to logs/actions.log
+- ✅ Human-readable markdown format
+- ✅ Zero external dependencies
+
+### CEO Briefing Agent (Gold Tier NEW!)
+- ✅ Aggregate completed tasks from Done directory
+- ✅ Track pending tasks from Needs_Action directory
+- ✅ Monitor pending approvals from Needs_Approval directory
+- ✅ Count social media posts from logs
+- ✅ Summarize income/expenses from accounting ledger
+- ✅ Calculate system health metrics from logs
+- ✅ Generate actionable recommendations
+- ✅ Auto-schedule weekly generation
+- ✅ Archive historical reports
+- ✅ Beautiful markdown formatting
+
+### Error Recovery Agent (Gold Tier NEW!)
+- ✅ Automatic error detection and logging
+- ✅ Comprehensive error tracking to logs/errors.log
+- ✅ Failed file quarantine to AI_Employee_Vault/Errors/
+- ✅ Automatic retry after 5 minutes (once)
+- ✅ Retry queue management
+- ✅ Error statistics and reporting
+- ✅ Decorator for easy integration
+- ✅ Background service mode
+- ✅ Permanent failure tracking
+- ✅ Zero external dependencies
+
+### Ralph Loop Agent (Gold Tier NEW!)
+- ✅ Continuous task monitoring from Needs_Action/
+- ✅ Automatic task analysis and planning
+- ✅ Step-by-step execution with verification
+- ✅ Risk assessment and human approval for risky tasks
+- ✅ Automatic error recovery integration
+- ✅ Plan.md creation for each task
+- ✅ Completed task archival to Done/
+- ✅ Safety limits (max 5 iterations)
+- ✅ Dry-run mode for testing
+- ✅ Autonomous operation
 
 ## 🔧 Technical Highlights
 
@@ -1755,16 +2095,31 @@ pip install rich
 **Basic Agents** (task_planner.py, watch_inbox.py, request_approval.py):
 - `rich>=13.0.0` - Beautiful, colorful terminal output with panels, tables, and progress bars
 
+**Email Integration** (Gmail watcher, email sender):
+```bash
+pip install python-dotenv
+```
+
 **LinkedIn** (requires additional installation):
 ```bash
 pip install playwright python-dotenv
 playwright install chromium
 ```
 
+**Twitter/X** (Gold Tier):
+```bash
+pip install tweepy python-dotenv
+```
+
+**Facebook/Instagram** (Gold Tier):
+```bash
+pip install requests python-dotenv pillow
+```
+
 **All dependencies**:
 ```bash
 # Install all at once
-pip install rich playwright python-dotenv
+pip install rich playwright python-dotenv tweepy requests pillow
 playwright install chromium
 ```
 
@@ -1999,14 +2354,36 @@ git push origin feature/amazing-feature
 # Start watchers
 python scripts/watch_gmail.py          # Monitor Gmail inbox
 python scripts/watch_inbox.py          # Monitor vault inbox
+python scripts/ralph_loop.py           # Start autonomous task loop
 
 # Manual operations
 python scripts/task_planner.py         # Process inbox files once
 python scripts/send_email.py --to user@example.com --subject "Test" --body "Hello"
 python scripts/post_linkedin.py "My post content"
 
+# Social media (Gold Tier)
+python scripts/post_linkedin.py "LinkedIn post"
+python scripts/twitter_post.py "Tweet content"
+python scripts/social_meta.py facebook "Facebook post"
+python scripts/social_meta.py instagram "Caption" image.jpg
+
+# Financial management (Gold Tier)
+python scripts/accounting_manager.py add --date 2026-03-04 --title "Payment" --type income --amount 5000 --description "Client payment"
+python scripts/accounting_manager.py summary
+python scripts/accounting_manager.py weekly
+
+# Executive reporting (Gold Tier)
+python scripts/ceo_briefing.py         # Generate CEO briefing
+python scripts/ceo_briefing_scheduler.py  # Start automated briefing
+
+# Error recovery (Gold Tier)
+python scripts/error_recovery.py --service  # Start error recovery service
+python scripts/error_recovery.py --stats    # View error statistics
+
 # Monitoring
 tail -f logs/actions.log               # Watch all activity
+tail -f logs/errors.log                # Watch errors (Gold Tier)
+tail -f logs/social.log                # Watch social media (Gold Tier)
 grep ERROR logs/actions.log            # Find errors
 grep HEARTBEAT logs/actions.log        # Check health
 
@@ -2018,6 +2395,9 @@ ls AI_Employee_Vault/Inbox/            # Check pending tasks
 ls AI_Employee_Vault/Needs_Action/     # Check generated plans
 ls AI_Employee_Vault/Needs_Approval/   # Check pending approvals
 ls AI_Employee_Vault/Done/             # Check completed tasks
+ls AI_Employee_Vault/Errors/           # Check failed files (Gold Tier)
+ls AI_Employee_Vault/Accounting/       # Check financial ledgers (Gold Tier)
+ls AI_Employee_Vault/Reports/          # Check reports (Gold Tier)
 ```
 
 ### Directory Quick Reference
@@ -2028,6 +2408,11 @@ ls AI_Employee_Vault/Done/             # Check completed tasks
 | `AI_Employee_Vault/Needs_Action/` | Generated plans appear here | ✅ |
 | `AI_Employee_Vault/Needs_Approval/` | Approval requests | ✅ |
 | `AI_Employee_Vault/Done/` | Completed tasks | ✅ |
+| `AI_Employee_Vault/Errors/` | Failed/quarantined files (Gold Tier) | ✅ |
+| `AI_Employee_Vault/Plans/` | Execution plans (Gold Tier) | ✅ |
+| `AI_Employee_Vault/Actions/` | Action items | ✅ |
+| `AI_Employee_Vault/Accounting/` | Financial ledgers (Gold Tier) | ✅ |
+| `AI_Employee_Vault/Reports/` | Generated reports (Gold Tier) | ✅ |
 | `logs/` | All activity logs | ✅ |
 | `logs/screenshots/` | LinkedIn debug screenshots | ✅ |
 
@@ -2041,6 +2426,18 @@ EMAIL_PASSWORD=your_app_password_here
 # Required for LinkedIn
 LINKEDIN_EMAIL=your.email@example.com
 LINKEDIN_PASSWORD=your_password_here
+
+# Required for Twitter/X (Gold Tier)
+TWITTER_API_KEY=your-api-key
+TWITTER_API_SECRET=your-api-secret
+TWITTER_ACCESS_TOKEN=your-access-token
+TWITTER_ACCESS_TOKEN_SECRET=your-access-token-secret
+TWITTER_BEARER_TOKEN=your-bearer-token
+
+# Required for Facebook/Instagram (Gold Tier)
+META_ACCESS_TOKEN=your-long-lived-access-token
+FACEBOOK_PAGE_ID=your-facebook-page-id
+INSTAGRAM_ACCOUNT_ID=your-instagram-business-account-id
 
 # Optional SMTP settings (defaults to Gmail)
 SMTP_SERVER=smtp.gmail.com
@@ -2067,9 +2464,12 @@ SMTP_PORT=587
 
 Check logs for detailed error information:
 - `logs/actions.log` - All activity logs
+- `logs/errors.log` - Error tracking and recovery (Gold Tier)
+- `logs/social.log` - Social media activity (Gold Tier)
 - `logs/screenshots/` - Visual debugging for LinkedIn
 - `logs/page_source.html` - HTML snapshot for debugging
 - `logs/processed.json` - Processed files registry
+- `logs/retry_queue.json` - Error recovery queue (Gold Tier)
 - Individual SKILL.md files for detailed documentation
 
 **Common Issues**:
@@ -2080,20 +2480,33 @@ Check logs for detailed error information:
 5. Gmail watcher not working → Check App Password in .env
 6. Emails not detected → Verify emails are unread in Gmail
 7. Auto-reply not sent → Check SMTP credentials and connection
+8. Twitter API error → Verify all 5 credentials in .env (Gold Tier)
+9. Facebook/Instagram error → Check Meta access token validity (Gold Tier)
+10. Accounting ledger not found → File auto-created on first transaction (Gold Tier)
+11. CEO briefing empty → Ensure vault directories have data (Gold Tier)
+12. Error recovery not working → Check logs/errors.log and retry_queue.json (Gold Tier)
+13. Ralph Loop stuck → Check max iterations limit and task complexity (Gold Tier)
 
 ## 🎯 Project Goals Achieved
 
 ✅ **Gold Tier Requirements Met**:
-- Multiple autonomous agent skills working together
+- Multiple autonomous agent skills working together (15 agents)
 - File-based task management system
 - Human-in-the-loop approval workflow
-- External service integration (LinkedIn, Gmail)
+- Multi-platform social media integration (LinkedIn, Twitter/X, Facebook, Instagram)
+- Social media tracking and analytics
+- Financial management and accounting system
+- Executive reporting with CEO briefings
+- Error recovery and retry system
+- Autonomous task execution loop
 - Comprehensive logging and monitoring
 - Production-ready error handling
 - Security best practices implemented
 - Complete documentation
 - Advanced email automation and processing
 - Automated background scheduling
+- Beautiful terminal UI with Rich library
+- Enterprise-grade features and reliability
 
 ---
 
