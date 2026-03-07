@@ -36,6 +36,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# Rich library for beautiful terminal output
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
+    from rich.live import Live
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -79,9 +92,24 @@ def log_action(message: str, level: str = "INFO"):
     try:
         with open(ACTIONS_LOG, "a", encoding="utf-8") as f:
             f.write(log_entry)
-        print(f"[{level}] {message}")
+
+        # Colorful console output
+        if RICH_AVAILABLE:
+            if level == "ERROR":
+                console.print(f"[red][X][/red] {message}")
+            elif level == "SUCCESS":
+                console.print(f"[green][OK][/green] {message}")
+            elif level == "WARNING":
+                console.print(f"[yellow][!][/yellow] {message}")
+            else:
+                console.print(f"[cyan][i][/cyan] {message}")
+        else:
+            print(f"[{level}] {message}")
     except Exception as e:
-        print(f"[ERROR] Failed to write to log: {e}")
+        if RICH_AVAILABLE:
+            console.print(f"[red][X] Failed to write to log: {e}[/red]")
+        else:
+            print(f"[ERROR] Failed to write to log: {e}")
 
 
 def get_pending_tasks() -> List[Path]:
@@ -483,13 +511,24 @@ def run_autonomous_loop(dry_run: bool = False, max_iterations: int = MAX_ITERATI
         max_iterations (int): Max iterations per task
         single_run (bool): If True, process one task and exit
     """
-    print(f"\n{'='*60}")
-    print(f"RALPH WIGGUM AUTONOMOUS LOOP")
-    print(f"{'='*60}")
-    print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Mode: {'DRY-RUN' if dry_run else 'LIVE'}")
-    print(f"Max Iterations: {max_iterations}")
-    print(f"{'='*60}\n")
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel.fit(
+            "[bold magenta]Ralph Wiggum Autonomous Loop[/bold magenta]\n"
+            "[dim]Gold Tier AI Employee[/dim]\n"
+            f"[yellow]Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/yellow]\n"
+            f"[cyan]Mode: {'DRY-RUN' if dry_run else 'LIVE'} | Max Iterations: {max_iterations}[/cyan]",
+            border_style="magenta"
+        ))
+        console.print()
+    else:
+        print(f"\n{'='*60}")
+        print(f"RALPH WIGGUM AUTONOMOUS LOOP")
+        print(f"{'='*60}")
+        print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Mode: {'DRY-RUN' if dry_run else 'LIVE'}")
+        print(f"Max Iterations: {max_iterations}")
+        print(f"{'='*60}\n")
 
     log_action(f"Ralph Loop started (dry_run={dry_run}, max_iterations={max_iterations})", "INFO")
 
@@ -500,25 +539,54 @@ def run_autonomous_loop(dry_run: bool = False, max_iterations: int = MAX_ITERATI
 
             if not tasks:
                 if single_run:
-                    print("No tasks found. Exiting.")
+                    if RICH_AVAILABLE:
+                        console.print("[yellow]No tasks found. Exiting.[/yellow]")
+                    else:
+                        print("No tasks found. Exiting.")
                     break
                 else:
-                    print(f"[{datetime.now().strftime('%H:%M:%S')}] No tasks pending. Waiting...")
+                    if RICH_AVAILABLE:
+                        console.print(f"[dim][{datetime.now().strftime('%H:%M:%S')}] No tasks pending. Waiting...[/dim]")
+                    else:
+                        print(f"[{datetime.now().strftime('%H:%M:%S')}] No tasks pending. Waiting...")
                     time.sleep(60)  # Wait 1 minute
                     continue
 
             # Process first task
             task = tasks[0]
-            print(f"\n{'='*60}")
-            print(f"Processing task: {task.name}")
-            print(f"{'='*60}\n")
+            if RICH_AVAILABLE:
+                console.print()
+                console.print(Panel(
+                    f"[bold cyan]Processing task: {task.name}[/bold cyan]",
+                    border_style="cyan",
+                    padding=(1, 2)
+                ))
+                console.print()
+            else:
+                print(f"\n{'='*60}")
+                print(f"Processing task: {task.name}")
+                print(f"{'='*60}\n")
 
             success = execute_task(task, dry_run, max_iterations)
 
             if success:
-                print(f"\n[SUCCESS] Task completed: {task.name}\n")
+                if RICH_AVAILABLE:
+                    console.print(Panel(
+                        f"[green]✓ Task completed: {task.name}[/green]",
+                        border_style="green",
+                        padding=(1, 2)
+                    ))
+                else:
+                    print(f"\n[SUCCESS] Task completed: {task.name}\n")
             else:
-                print(f"\n[FAILED] Task failed or requires approval: {task.name}\n")
+                if RICH_AVAILABLE:
+                    console.print(Panel(
+                        f"[red]✗ Task failed or requires approval: {task.name}[/red]",
+                        border_style="red",
+                        padding=(1, 2)
+                    ))
+                else:
+                    print(f"\n[FAILED] Task failed or requires approval: {task.name}\n")
 
             if single_run:
                 break

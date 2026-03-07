@@ -19,13 +19,37 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# Rich library for beautiful terminal output
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
+    from rich.table import Table
+    from rich.live import Live
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 
 def print_banner():
     """Print demo banner."""
-    print("\n" + "=" * 60)
-    print("  INTEGRATED WORKFLOW DEMO")
-    print("  Gold Tier AI Employee - Advanced Automation")
-    print("=" * 60 + "\n")
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel.fit(
+            "[bold yellow]INTEGRATED WORKFLOW DEMO[/bold yellow]\n"
+            "[cyan]Gold Tier AI Employee - Advanced Automation[/cyan]\n"
+            "[dim]Demonstrating all systems working together[/dim]",
+            border_style="yellow",
+            padding=(1, 2)
+        ))
+        console.print()
+    else:
+        print("\n" + "=" * 60)
+        print("  INTEGRATED WORKFLOW DEMO")
+        print("  Gold Tier AI Employee - Advanced Automation")
+        print("=" * 60 + "\n")
 
 
 def create_sample_tasks():
@@ -94,21 +118,35 @@ Background worker process memory usage grows continuously until crash.
         }
     ]
 
-    print("[*] Creating sample tasks in Inbox...")
-    for task in tasks:
-        filepath = inbox / task["filename"]
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(task["content"])
-        print(f"   [+] Created: {task['filename']}")
+    if RICH_AVAILABLE:
+        console.print("[cyan][*] Creating sample tasks in Inbox...[/cyan]")
+        for task in tasks:
+            filepath = inbox / task["filename"]
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(task["content"])
+            console.print(f"   [green][+][/green] Created: [white]{task['filename']}[/white]")
 
-    print(f"\n[SUCCESS] Created {len(tasks)} sample tasks\n")
+        console.print(f"\n[green]✓ Created {len(tasks)} sample tasks[/green]\n")
+    else:
+        print("[*] Creating sample tasks in Inbox...")
+        for task in tasks:
+            filepath = inbox / task["filename"]
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(task["content"])
+            print(f"   [+] Created: {task['filename']}")
+
+        print(f"\n[SUCCESS] Created {len(tasks)} sample tasks\n")
     return len(tasks)
 
 
 def run_task_planner():
     """Run the task planner to process inbox files."""
-    print("[*] Running Task Planner...")
-    print("   Analyzing task files and generating plans...\n")
+    if RICH_AVAILABLE:
+        console.print("[cyan][*] Running Task Planner...[/cyan]")
+        console.print("   [dim]Analyzing task files and generating plans...[/dim]\n")
+    else:
+        print("[*] Running Task Planner...")
+        print("   Analyzing task files and generating plans...\n")
 
     import subprocess
     import sys
@@ -120,10 +158,16 @@ def run_task_planner():
     )
 
     if result.returncode == 0:
-        print("[SUCCESS] Task Planner completed successfully\n")
+        if RICH_AVAILABLE:
+            console.print("[green]✓ Task Planner completed successfully[/green]\n")
+        else:
+            print("[SUCCESS] Task Planner completed successfully\n")
         return True
     else:
-        print(f"[ERROR] Task Planner failed: {result.stderr}\n")
+        if RICH_AVAILABLE:
+            console.print(f"[red]✗ Task Planner failed: {result.stderr}[/red]\n")
+        else:
+            print(f"[ERROR] Task Planner failed: {result.stderr}\n")
         return False
 
 
@@ -132,113 +176,218 @@ def show_generated_plans():
     needs_action = Path("AI_Employee_Vault/Needs_Action")
 
     if not needs_action.exists():
-        print("[ERROR] Needs_Action folder not found\n")
+        if RICH_AVAILABLE:
+            console.print("[red]✗ Needs_Action folder not found[/red]\n")
+        else:
+            print("[ERROR] Needs_Action folder not found\n")
         return
 
     plans = list(needs_action.glob("Plan_*.md"))
 
     if not plans:
-        print("[ERROR] No plans found\n")
+        if RICH_AVAILABLE:
+            console.print("[red]✗ No plans found[/red]\n")
+        else:
+            print("[ERROR] No plans found\n")
         return
 
-    print("[*] Generated Plans:")
-    print("-" * 60)
+    if RICH_AVAILABLE:
+        console.print("[cyan][*] Generated Plans:[/cyan]")
+        console.print("[dim]" + "-" * 60 + "[/dim]")
 
-    for plan in sorted(plans)[-3:]:  # Show last 3 plans
-        print(f"\n[PLAN] {plan.name}")
+        for plan in sorted(plans)[-3:]:  # Show last 3 plans
+            console.print(f"\n[bold yellow][PLAN][/bold yellow] [white]{plan.name}[/white]")
 
-        # Read and display plan summary
-        with open(plan, "r", encoding="utf-8") as f:
-            content = f.read()
+            # Read and display plan summary
+            with open(plan, "r", encoding="utf-8") as f:
+                content = f.read()
 
-            # Extract metadata
-            if content.startswith("---"):
-                lines = content.split("\n")
-                for line in lines[1:10]:
-                    if line.strip() == "---":
+                # Extract metadata
+                if content.startswith("---"):
+                    lines = content.split("\n")
+                    for line in lines[1:10]:
+                        if line.strip() == "---":
+                            break
+                        if "priority:" in line or "task_type:" in line:
+                            console.print(f"   [cyan]{line.strip()}[/cyan]")
+
+                # Extract title
+                for line in content.split("\n"):
+                    if line.startswith("# Plan:"):
+                        console.print(f"   [bold]{line}[/bold]")
                         break
-                    if "priority:" in line or "task_type:" in line:
-                        print(f"   {line.strip()}")
 
-            # Extract title
-            for line in content.split("\n"):
-                if line.startswith("# Plan:"):
-                    print(f"   {line}")
-                    break
+        console.print("\n[dim]" + "-" * 60 + "[/dim]\n")
+    else:
+        print("[*] Generated Plans:")
+        print("-" * 60)
 
-    print("\n" + "-" * 60 + "\n")
+        for plan in sorted(plans)[-3:]:  # Show last 3 plans
+            print(f"\n[PLAN] {plan.name}")
+
+            # Read and display plan summary
+            with open(plan, "r", encoding="utf-8") as f:
+                content = f.read()
+
+                # Extract metadata
+                if content.startswith("---"):
+                    lines = content.split("\n")
+                    for line in lines[1:10]:
+                        if line.strip() == "---":
+                            break
+                        if "priority:" in line or "task_type:" in line:
+                            print(f"   {line.strip()}")
+
+                # Extract title
+                for line in content.split("\n"):
+                    if line.startswith("# Plan:"):
+                        print(f"   {line}")
+                        break
+
+        print("\n" + "-" * 60 + "\n")
 
 
 def demonstrate_watcher():
     """Demonstrate the vault watcher concept."""
-    print("[*] Vault Watcher Demonstration")
-    print("-" * 60)
-    print("The Vault Watcher continuously monitors the Inbox folder.")
-    print("When new .md files appear, it automatically triggers the")
-    print("Task Planner to process them.\n")
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel(
+            "[bold cyan]Vault Watcher Demonstration[/bold cyan]\n\n"
+            "[white]The Vault Watcher continuously monitors the Inbox folder.[/white]\n"
+            "[white]When new .md files appear, it automatically triggers the[/white]\n"
+            "[white]Task Planner to process them.[/white]\n\n"
+            "[yellow]To start the watcher in production:[/yellow]\n"
+            "[green]python scripts/watch_inbox.py[/green]\n\n"
+            "[cyan]The watcher will:[/cyan]\n"
+            "[white]- Monitor AI_Employee_Vault/Inbox/ every 15 seconds[/white]\n"
+            "[white]- Detect new .md files[/white]\n"
+            "[white]- Automatically run task planner[/white]\n"
+            "[white]- Log all activity to logs/actions.log[/white]\n"
+            "[white]- Never process the same file twice[/white]",
+            border_style="cyan",
+            padding=(1, 2)
+        ))
+        console.print()
+    else:
+        print("[*] Vault Watcher Demonstration")
+        print("-" * 60)
+        print("The Vault Watcher continuously monitors the Inbox folder.")
+        print("When new .md files appear, it automatically triggers the")
+        print("Task Planner to process them.\n")
 
-    print("To start the watcher in production:")
-    print("   python scripts/watch_inbox.py\n")
+        print("To start the watcher in production:")
+        print("   python scripts/watch_inbox.py\n")
 
-    print("The watcher will:")
-    print("   - Monitor AI_Employee_Vault/Inbox/ every 15 seconds")
-    print("   - Detect new .md files")
-    print("   - Automatically run task planner")
-    print("   - Log all activity to logs/actions.log")
-    print("   - Never process the same file twice\n")
+        print("The watcher will:")
+        print("   - Monitor AI_Employee_Vault/Inbox/ every 15 seconds")
+        print("   - Detect new .md files")
+        print("   - Automatically run task planner")
+        print("   - Log all activity to logs/actions.log")
+        print("   - Never process the same file twice\n")
 
 
 def demonstrate_social_media():
     """Demonstrate social media posting capabilities."""
-    print("[*] Social Media Auto-Post Demonstration")
-    print("-" * 60)
-    print("The Gold Tier AI Employee can post to multiple platforms:\n")
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel(
+            "[bold magenta]Social Media Auto-Post Demonstration[/bold magenta]\n\n"
+            "[white]The Gold Tier AI Employee can post to multiple platforms:[/white]\n\n"
+            "[bold blue]TWITTER[/bold blue]\n"
+            "[green]python scripts/post_twitter.py \"Your tweet message\"[/green]\n"
+            "[dim]- Supports text, images, and threads[/dim]\n"
+            "[dim]- Automatic rate limiting[/dim]\n\n"
+            "[bold magenta]INSTAGRAM[/bold magenta]\n"
+            "[green]python scripts/post_instagram.py \"Caption\" --image path/to/image.jpg[/green]\n"
+            "[dim]- Supports images and captions[/dim]\n"
+            "[dim]- Hashtag optimization[/dim]\n\n"
+            "[bold blue]FACEBOOK[/bold blue]\n"
+            "[green]python scripts/post_facebook.py \"Your post message\"[/green]\n"
+            "[dim]- Supports text and media[/dim]\n"
+            "[dim]- Page and profile posting[/dim]\n\n"
+            "[bold cyan]LINKEDIN[/bold cyan]\n"
+            "[green]python scripts/post_linkedin.py \"Professional update\"[/green]\n"
+            "[dim]- Professional networking[/dim]\n"
+            "[dim]- Article sharing[/dim]\n\n"
+            "[yellow]Setup required:[/yellow]\n"
+            "[white]1. pip install playwright python-dotenv[/white]\n"
+            "[white]2. playwright install chromium[/white]\n"
+            "[white]3. Configure credentials in .env file[/white]\n\n"
+            "[red]WARNING:[/red] [yellow]Social media automation should be used responsibly[/yellow]\n"
+            "[yellow]and in compliance with platform Terms of Service.[/yellow]",
+            border_style="magenta",
+            padding=(1, 2)
+        ))
+        console.print()
+    else:
+        print("[*] Social Media Auto-Post Demonstration")
+        print("-" * 60)
+        print("The Gold Tier AI Employee can post to multiple platforms:\n")
 
-    print("[TWITTER]")
-    print("   python scripts/post_twitter.py \"Your tweet message\"")
-    print("   - Supports text, images, and threads")
-    print("   - Automatic rate limiting\n")
+        print("[TWITTER]")
+        print("   python scripts/post_twitter.py \"Your tweet message\"")
+        print("   - Supports text, images, and threads")
+        print("   - Automatic rate limiting\n")
 
-    print("[INSTAGRAM]")
-    print("   python scripts/post_instagram.py \"Caption\" --image path/to/image.jpg")
-    print("   - Supports images and captions")
-    print("   - Hashtag optimization\n")
+        print("[INSTAGRAM]")
+        print("   python scripts/post_instagram.py \"Caption\" --image path/to/image.jpg")
+        print("   - Supports images and captions")
+        print("   - Hashtag optimization\n")
 
-    print("[FACEBOOK]")
-    print("   python scripts/post_facebook.py \"Your post message\"")
-    print("   - Supports text and media")
-    print("   - Page and profile posting\n")
+        print("[FACEBOOK]")
+        print("   python scripts/post_facebook.py \"Your post message\"")
+        print("   - Supports text and media")
+        print("   - Page and profile posting\n")
 
-    print("[LINKEDIN]")
-    print("   python scripts/post_linkedin.py \"Professional update\"")
-    print("   - Professional networking")
-    print("   - Article sharing\n")
+        print("[LINKEDIN]")
+        print("   python scripts/post_linkedin.py \"Professional update\"")
+        print("   - Professional networking")
+        print("   - Article sharing\n")
 
-    print("Setup required:")
-    print("   1. pip install playwright python-dotenv")
-    print("   2. playwright install chromium")
-    print("   3. Configure credentials in .env file\n")
+        print("Setup required:")
+        print("   1. pip install playwright python-dotenv")
+        print("   2. playwright install chromium")
+        print("   3. Configure credentials in .env file\n")
 
-    print("[WARNING] Note: Social media automation should be used responsibly")
-    print("   and in compliance with platform Terms of Service.\n")
+        print("[WARNING] Note: Social media automation should be used responsibly")
+        print("   and in compliance with platform Terms of Service.\n")
 
 
 def demonstrate_accounting_manager():
     """Demonstrate Accounting Manager capabilities."""
-    print("[*] Accounting Manager Demonstration")
-    print("-" * 60)
-    print("The Accounting Manager tracks financial data and generates reports.\n")
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel(
+            "[bold green]Accounting Manager Demonstration[/bold green]\n\n"
+            "[white]The Accounting Manager tracks financial data and generates reports.[/white]\n\n"
+            "[cyan]Features:[/cyan]\n"
+            "[white]- Expense tracking and categorization[/white]\n"
+            "[white]- Invoice management[/white]\n"
+            "[white]- Financial report generation[/white]\n"
+            "[white]- Budget monitoring and alerts[/white]\n"
+            "[white]- Tax preparation assistance[/white]\n\n"
+            "[yellow]Example usage:[/yellow]\n"
+            "[green]python scripts/accounting_manager.py --report monthly[/green]\n"
+            "[green]python scripts/accounting_manager.py --add-expense 150.00 \"Office supplies\"[/green]",
+            border_style="green",
+            padding=(1, 2)
+        ))
+        console.print()
+    else:
+        print("[*] Accounting Manager Demonstration")
+        print("-" * 60)
+        print("The Accounting Manager tracks financial data and generates reports.\n")
 
-    print("Features:")
-    print("   - Expense tracking and categorization")
-    print("   - Invoice management")
-    print("   - Financial report generation")
-    print("   - Budget monitoring and alerts")
-    print("   - Tax preparation assistance\n")
+        print("Features:")
+        print("   - Expense tracking and categorization")
+        print("   - Invoice management")
+        print("   - Financial report generation")
+        print("   - Budget monitoring and alerts")
+        print("   - Tax preparation assistance\n")
 
-    print("Example usage:")
-    print("   python scripts/accounting_manager.py --report monthly")
-    print("   python scripts/accounting_manager.py --add-expense 150.00 \"Office supplies\"\n")
+        print("Example usage:")
+        print("   python scripts/accounting_manager.py --report monthly")
+        print("   python scripts/accounting_manager.py --add-expense 150.00 \"Office supplies\"\n")
 
 
 def demonstrate_ceo_briefing():

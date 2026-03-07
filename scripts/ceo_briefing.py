@@ -28,6 +28,18 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+# Rich library for beautiful terminal output
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.markdown import Markdown
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 # Configuration
 VAULT_DIR = Path("AI_Employee_Vault")
 REPORTS_DIR = VAULT_DIR / "Reports"
@@ -50,9 +62,24 @@ def log_action(message: str, level: str = "INFO"):
     try:
         with open(ACTIONS_LOG, "a", encoding="utf-8") as f:
             f.write(log_entry)
-        print(f"[{level}] {message}")
+
+        # Colorful console output
+        if RICH_AVAILABLE:
+            if level == "ERROR":
+                console.print(f"[red][X][/red] {message}")
+            elif level == "SUCCESS":
+                console.print(f"[green][OK][/green] {message}")
+            elif level == "WARNING":
+                console.print(f"[yellow][!][/yellow] {message}")
+            else:
+                console.print(f"[cyan][i][/cyan] {message}")
+        else:
+            print(f"[{level}] {message}")
     except Exception as e:
-        print(f"[ERROR] Failed to write to log: {e}")
+        if RICH_AVAILABLE:
+            console.print(f"[red][X] Failed to write to log: {e}[/red]")
+        else:
+            print(f"[ERROR] Failed to write to log: {e}")
 
 
 def get_week_range(date: datetime = None) -> Tuple[datetime, datetime]:
@@ -568,28 +595,62 @@ def main():
 
     args = parser.parse_args()
 
+    # Show banner
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel.fit(
+            "[bold blue]CEO Briefing Generator[/bold blue]\n"
+            "[dim]Gold Tier AI Employee[/dim]",
+            border_style="blue"
+        ))
+        console.print()
+
     # Parse date if provided
     date = None
     if args.date:
         try:
             date = datetime.strptime(args.date, "%Y-%m-%d")
         except ValueError:
-            print(f"[ERROR] Invalid date format. Use YYYY-MM-DD")
+            if RICH_AVAILABLE:
+                console.print("[red]✗ Invalid date format. Use YYYY-MM-DD[/red]")
+            else:
+                print(f"[ERROR] Invalid date format. Use YYYY-MM-DD")
             return 1
 
     # Generate briefing
     try:
         report_path = generate_ceo_briefing(date)
-        print(f"\n{'='*60}")
-        print(f"CEO BRIEFING GENERATED")
-        print(f"{'='*60}")
-        print(f"Report: {report_path}")
-        print(f"Latest: AI_Employee_Vault/Reports/CEO_Weekly.md")
-        print(f"{'='*60}\n")
+
+        if RICH_AVAILABLE:
+            console.print()
+            console.print(Panel(
+                f"[green]CEO Briefing Generated Successfully[/green]\n\n"
+                f"[cyan]Report:[/cyan] [white]{report_path}[/white]\n"
+                f"[cyan]Latest:[/cyan] [white]AI_Employee_Vault/Reports/CEO_Weekly.md[/white]",
+                title="[bold green]Success[/bold green]",
+                border_style="green",
+                padding=(1, 2)
+            ))
+            console.print()
+        else:
+            print(f"\n{'='*60}")
+            print(f"CEO BRIEFING GENERATED")
+            print(f"{'='*60}")
+            print(f"Report: {report_path}")
+            print(f"Latest: AI_Employee_Vault/Reports/CEO_Weekly.md")
+            print(f"{'='*60}\n")
         return 0
     except Exception as e:
         log_action(f"Failed to generate CEO briefing: {str(e)}", "ERROR")
-        print(f"\n[ERROR] Failed to generate briefing: {str(e)}\n")
+        if RICH_AVAILABLE:
+            console.print(Panel(
+                f"[red]Failed to generate briefing[/red]\n\n"
+                f"[yellow]{str(e)}[/yellow]",
+                border_style="red",
+                padding=(1, 2)
+            ))
+        else:
+            print(f"\n[ERROR] Failed to generate briefing: {str(e)}\n")
         return 1
 
 

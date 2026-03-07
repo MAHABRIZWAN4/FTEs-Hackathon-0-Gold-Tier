@@ -45,6 +45,18 @@ from pathlib import Path
 from typing import Callable, Any, Optional, Dict
 from functools import wraps
 
+# Rich library for beautiful terminal output
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.progress import Progress, SpinnerColumn, TextColumn
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 # Configuration
 VAULT_DIR = Path("AI_Employee_Vault")
 ERRORS_DIR = VAULT_DIR / "Errors"
@@ -70,9 +82,24 @@ def log_action(message: str, level: str = "INFO"):
     try:
         with open(ACTIONS_LOG, "a", encoding="utf-8") as f:
             f.write(log_entry)
-        print(f"[{level}] {message}")
+
+        # Colorful console output
+        if RICH_AVAILABLE:
+            if level == "ERROR":
+                console.print(f"[red][X][/red] {message}")
+            elif level == "SUCCESS":
+                console.print(f"[green][OK][/green] {message}")
+            elif level == "WARNING":
+                console.print(f"[yellow][!][/yellow] {message}")
+            else:
+                console.print(f"[cyan][i][/cyan] {message}")
+        else:
+            print(f"[{level}] {message}")
     except Exception as e:
-        print(f"[ERROR] Failed to write to log: {e}")
+        if RICH_AVAILABLE:
+            console.print(f"[red][X] Failed to write to log: {e}[/red]")
+        else:
+            print(f"[ERROR] Failed to write to log: {e}")
 
 
 def log_error(error: Exception, context: str = "", file_path: str = "", stack_trace: str = ""):
@@ -455,42 +482,112 @@ def main():
 
     if args.service:
         # Run as service
+        if RICH_AVAILABLE:
+            console.print()
+            console.print(Panel.fit(
+                "[bold red]Error Recovery Service[/bold red]\n"
+                "[dim]Gold Tier AI Employee[/dim]\n"
+                f"[yellow]Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/yellow]\n"
+                f"[cyan]Retry delay: {RETRY_DELAY_SECONDS}s | Max retries: {MAX_RETRIES}[/cyan]",
+                border_style="red"
+            ))
+            console.print()
         run_error_recovery_service()
 
     elif args.process_queue:
         # Process queue once
-        print("Processing retry queue...")
+        if RICH_AVAILABLE:
+            console.print("[cyan]Processing retry queue...[/cyan]")
+        else:
+            print("Processing retry queue...")
         process_retry_queue()
-        print("Done.")
+        if RICH_AVAILABLE:
+            console.print("[green]✓ Done.[/green]")
+        else:
+            print("Done.")
 
     elif args.stats:
         # Show statistics
         stats = get_error_statistics()
         queue = load_retry_queue()
 
-        print(f"\n{'='*60}")
-        print(f"ERROR RECOVERY STATISTICS")
-        print(f"{'='*60}")
-        print(f"Total Errors Logged: {stats['total_errors']}")
-        print(f"Tasks in Retry Queue: {len(queue.get('tasks', []))}")
+        if RICH_AVAILABLE:
+            console.print()
+            console.print(Panel.fit(
+                "[bold red]Error Recovery Statistics[/bold red]\n"
+                "[dim]Gold Tier AI Employee[/dim]",
+                border_style="red"
+            ))
+            console.print()
 
-        if stats['error_types']:
-            print(f"\nError Types:")
-            for error_type, count in sorted(stats['error_types'].items(), key=lambda x: x[1], reverse=True):
-                print(f"  {error_type}: {count}")
+            # Main stats table
+            table = Table(title="Error Overview", border_style="red", show_header=True, header_style="bold red")
+            table.add_column("Metric", style="red", width=30)
+            table.add_column("Count", style="bold white", justify="right", width=15)
 
-        pending = sum(1 for t in queue.get('tasks', []) if t.get('status') == 'pending_retry')
-        failed = sum(1 for t in queue.get('tasks', []) if t.get('status') == 'permanently_failed')
+            table.add_row("Total Errors Logged", f"[red]{stats['total_errors']}[/red]")
+            table.add_row("Tasks in Retry Queue", f"[yellow]{len(queue.get('tasks', []))}[/yellow]")
 
-        print(f"\nRetry Queue Status:")
-        print(f"  Pending Retry: {pending}")
-        print(f"  Permanently Failed: {failed}")
-        print(f"{'='*60}\n")
+            console.print(table)
+            console.print()
+
+            # Error types table
+            if stats['error_types']:
+                error_table = Table(title="Error Types Breakdown", border_style="yellow", show_header=True, header_style="bold yellow")
+                error_table.add_column("Error Type", style="yellow", width=35)
+                error_table.add_column("Count", style="bold white", justify="right", width=10)
+
+                for error_type, count in sorted(stats['error_types'].items(), key=lambda x: x[1], reverse=True):
+                    error_table.add_row(error_type, str(count))
+
+                console.print(error_table)
+                console.print()
+
+            # Retry queue status
+            pending = sum(1 for t in queue.get('tasks', []) if t.get('status') == 'pending_retry')
+            failed = sum(1 for t in queue.get('tasks', []) if t.get('status') == 'permanently_failed')
+
+            status_table = Table(title="Retry Queue Status", border_style="cyan", show_header=True, header_style="bold cyan")
+            status_table.add_column("Status", style="cyan", width=30)
+            status_table.add_column("Count", style="bold white", justify="right", width=15)
+
+            status_table.add_row("Pending Retry", f"[yellow]{pending}[/yellow]")
+            status_table.add_row("Permanently Failed", f"[red]{failed}[/red]")
+
+            console.print(status_table)
+            console.print()
+
+        else:
+            print(f"\n{'='*60}")
+            print(f"ERROR RECOVERY STATISTICS")
+            print(f"{'='*60}")
+            print(f"Total Errors Logged: {stats['total_errors']}")
+            print(f"Tasks in Retry Queue: {len(queue.get('tasks', []))}")
+
+            if stats['error_types']:
+                print(f"\nError Types:")
+                for error_type, count in sorted(stats['error_types'].items(), key=lambda x: x[1], reverse=True):
+                    print(f"  {error_type}: {count}")
+
+            pending = sum(1 for t in queue.get('tasks', []) if t.get('status') == 'pending_retry')
+            failed = sum(1 for t in queue.get('tasks', []) if t.get('status') == 'permanently_failed')
+
+            print(f"\nRetry Queue Status:")
+            print(f"  Pending Retry: {pending}")
+            print(f"  Permanently Failed: {failed}")
+            print(f"{'='*60}\n")
 
     elif args.clear_queue:
         # Clear queue
         save_retry_queue({"tasks": []})
-        print("Retry queue cleared.")
+        if RICH_AVAILABLE:
+            console.print(Panel(
+                "[green]✓ Retry queue cleared successfully[/green]",
+                border_style="green",
+                padding=(1, 2)
+            ))
+        else:
+            print("Retry queue cleared.")
         log_action("Retry queue cleared manually", "INFO")
 
     else:

@@ -27,6 +27,18 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# Rich library for beautiful terminal output
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.text import Text
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 # Configuration
 VAULT_DIR = Path("AI_Employee_Vault/Accounting")
 CURRENT_MONTH_FILE = VAULT_DIR / "Current_Month.md"
@@ -54,9 +66,24 @@ def log_action(message: str, level: str = "INFO"):
     try:
         with open(ACTIONS_LOG, "a", encoding="utf-8") as f:
             f.write(log_entry)
-        print(f"[{level}] {message}")
+
+        # Colorful console output
+        if RICH_AVAILABLE:
+            if level == "ERROR":
+                console.print(f"[red][X][/red] {message}")
+            elif level == "SUCCESS":
+                console.print(f"[green][OK][/green] {message}")
+            elif level == "WARNING":
+                console.print(f"[yellow][!][/yellow] {message}")
+            else:
+                console.print(f"[cyan][i][/cyan] {message}")
+        else:
+            print(f"[{level}] {message}")
     except Exception as e:
-        print(f"[ERROR] Failed to write to log: {e}")
+        if RICH_AVAILABLE:
+            console.print(f"[red][X] Failed to write to log: {e}[/red]")
+        else:
+            print(f"[ERROR] Failed to write to log: {e}")
 
 
 def validate_transaction(date: str, title: str, type: str, amount: float, description: str) -> Tuple[bool, str]:
@@ -531,43 +558,116 @@ def main():
         parser.print_help()
         return
 
+    # Show banner
+    if RICH_AVAILABLE:
+        console.print()
+        console.print(Panel.fit(
+            "[bold cyan]Accounting Manager[/bold cyan]\n"
+            "[dim]Gold Tier AI Employee[/dim]",
+            border_style="cyan"
+        ))
+        console.print()
+
     # Execute command
     if args.command == "add":
         result = add_transaction(args.date, args.title, args.type, args.amount, args.description)
-        print(f"\n{result['message']}\n")
+        if RICH_AVAILABLE:
+            if result['status'] == 'success':
+                console.print(Panel(
+                    f"[green]✓ {result['message']}[/green]",
+                    border_style="green",
+                    padding=(1, 2)
+                ))
+            else:
+                console.print(Panel(
+                    f"[red]✗ {result['message']}[/red]",
+                    border_style="red",
+                    padding=(1, 2)
+                ))
+        else:
+            print(f"\n{result['message']}\n")
 
     elif args.command == "summary":
         summary = generate_summary()
-        print(f"\n{'='*50}")
-        print(f"MONTHLY SUMMARY")
-        print(f"{'='*50}")
-        print(f"Total Income:     ${summary['total_income']:>12,.2f}")
-        print(f"Total Expenses:   ${summary['total_expenses']:>12,.2f}")
-        print(f"Net Profit:       ${summary['net_profit']:>12,.2f}")
-        print(f"\nTransactions:     {summary['transaction_count']:>12}")
-        print(f"  Income:         {summary['income_count']:>12}")
-        print(f"  Expenses:       {summary['expense_count']:>12}")
-        print(f"\nAverage Income:   ${summary['avg_income']:>12,.2f}")
-        print(f"Average Expense:  ${summary['avg_expense']:>12,.2f}")
-        print(f"{'='*50}\n")
+        if RICH_AVAILABLE:
+            table = Table(title="Monthly Summary", border_style="cyan", show_header=True, header_style="bold cyan")
+            table.add_column("Metric", style="cyan", width=25)
+            table.add_column("Value", style="bold white", justify="right", width=20)
+
+            table.add_row("Total Income", f"[green]${summary['total_income']:,.2f}[/green]")
+            table.add_row("Total Expenses", f"[red]${summary['total_expenses']:,.2f}[/red]")
+            table.add_row("Net Profit", f"[bold yellow]${summary['net_profit']:,.2f}[/bold yellow]")
+            table.add_row("", "")
+            table.add_row("Total Transactions", f"{summary['transaction_count']}")
+            table.add_row("  Income Count", f"[green]{summary['income_count']}[/green]")
+            table.add_row("  Expense Count", f"[red]{summary['expense_count']}[/red]")
+            table.add_row("", "")
+            table.add_row("Average Income", f"[green]${summary['avg_income']:,.2f}[/green]")
+            table.add_row("Average Expense", f"[red]${summary['avg_expense']:,.2f}[/red]")
+
+            console.print()
+            console.print(table)
+            console.print()
+        else:
+            print(f"\n{'='*50}")
+            print(f"MONTHLY SUMMARY")
+            print(f"{'='*50}")
+            print(f"Total Income:     ${summary['total_income']:>12,.2f}")
+            print(f"Total Expenses:   ${summary['total_expenses']:>12,.2f}")
+            print(f"Net Profit:       ${summary['net_profit']:>12,.2f}")
+            print(f"\nTransactions:     {summary['transaction_count']:>12}")
+            print(f"  Income:         {summary['income_count']:>12}")
+            print(f"  Expenses:       {summary['expense_count']:>12}")
+            print(f"\nAverage Income:   ${summary['avg_income']:>12,.2f}")
+            print(f"Average Expense:  ${summary['avg_expense']:>12,.2f}")
+            print(f"{'='*50}\n")
 
     elif args.command == "weekly":
         summary = generate_weekly_summary()
-        print(f"\n{'='*50}")
-        print(f"WEEKLY SUMMARY")
-        print(f"{'='*50}")
-        print(f"Week: {summary['week_start']} - {summary['week_end']}")
-        print(f"\nIncome:           ${summary['income']:>12,.2f}")
-        print(f"Expenses:         ${summary['expenses']:>12,.2f}")
-        print(f"Net:              ${summary['net']:>12,.2f}")
-        print(f"\nTransactions:     {summary['transaction_count']:>12}")
-        print(f"{'='*50}\n")
+        if RICH_AVAILABLE:
+            table = Table(title=f"Weekly Summary\n{summary['week_start']} - {summary['week_end']}", border_style="magenta", show_header=True, header_style="bold magenta")
+            table.add_column("Metric", style="magenta", width=25)
+            table.add_column("Value", style="bold white", justify="right", width=20)
+
+            table.add_row("Income", f"[green]${summary['income']:,.2f}[/green]")
+            table.add_row("Expenses", f"[red]${summary['expenses']:,.2f}[/red]")
+            table.add_row("Net", f"[bold yellow]${summary['net']:,.2f}[/bold yellow]")
+            table.add_row("Transactions", f"{summary['transaction_count']}")
+
+            console.print()
+            console.print(table)
+            console.print()
+        else:
+            print(f"\n{'='*50}")
+            print(f"WEEKLY SUMMARY")
+            print(f"{'='*50}")
+            print(f"Week: {summary['week_start']} - {summary['week_end']}")
+            print(f"\nIncome:           ${summary['income']:>12,.2f}")
+            print(f"Expenses:         ${summary['expenses']:>12,.2f}")
+            print(f"Net:              ${summary['net']:>12,.2f}")
+            print(f"\nTransactions:     {summary['transaction_count']:>12}")
+            print(f"{'='*50}\n")
 
     elif args.command == "archive":
         result = archive_month(args.year, args.month)
-        print(f"\n{result['message']}")
-        if result['status'] == 'success':
-            print(f"Archive location: {result['archive_path']}\n")
+        if RICH_AVAILABLE:
+            if result['status'] == 'success':
+                console.print(Panel(
+                    f"[green]✓ {result['message']}[/green]\n"
+                    f"[dim]Archive: {result['archive_path']}[/dim]",
+                    border_style="green",
+                    padding=(1, 2)
+                ))
+            else:
+                console.print(Panel(
+                    f"[red]✗ {result['message']}[/red]",
+                    border_style="red",
+                    padding=(1, 2)
+                ))
+        else:
+            print(f"\n{result['message']}")
+            if result['status'] == 'success':
+                print(f"Archive location: {result['archive_path']}\n")
 
     elif args.command == "list":
         transactions = get_transactions(args.type, args.start, args.end)
