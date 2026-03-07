@@ -3011,6 +3011,12 @@ python scripts/ralph_loop.py
 python scripts/ceo_briefing.py
 ```
 
+### Twitter Testing
+```bash
+# Post to Twitter via API
+python scripts/post_twitter.py "Building an AI Employee with Claude! #AI #Automation" --demo
+```
+
 ### Instagram Testing
 ```bash
 # Post to Instagram via Meta API
