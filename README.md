@@ -2982,6 +2982,67 @@ cat Social_Log.md
 
 ---
 
+## 🚀 Quick Command Reference
+
+Copy-paste these commands to test all Gold Tier features:
+
+### Accounting Manager
+```bash
+# Add income transaction
+python scripts/accounting_manager.py add --date 2026-03-04 --type income --amount 5000 --title "Client Payment" --description "Website project payment"
+```
+
+### Error Recovery
+```bash
+# View error statistics
+python scripts/error_recovery.py --stats
+```
+
+### Ralph Loop (Autonomous Agent)
+```bash
+# Create test task and run autonomous loop
+echo "Analyze our social media strategy" > AI_Employee_Vault\Inbox\ralph_test.md
+python scripts/ralph_loop.py
+```
+
+### CEO Briefing
+```bash
+# Generate executive briefing report
+python scripts/ceo_briefing.py
+```
+
+### Instagram Testing
+```bash
+# Post to Instagram via Meta API
+python scripts/post_instagram.py "Building an AI Employee with Claude! #AI #Automation"
+```
+
+### Facebook Testing
+```bash
+# Post to Facebook via browser automation
+python scripts/post_facebook.py "Building an AI Employee with Claude! Automating business with AI. #AI #Automation #GoldTier"
+```
+
+### Integrated Demo
+```bash
+# Run complete system integration test
+python scripts/integrated_demo.py
+```
+
+### Odoo MCP Server Testing
+```bash
+# Validate Odoo configuration
+python mcp/odoo_mcp/validate.py
+
+# Start Odoo MCP server
+python mcp/odoo_mcp/server.py
+
+# Run Odoo server tests
+python mcp/odoo_mcp/server.py --test
+```
+
+---
+
 **Built with ❤️ for FTEs - Gold Tier**
 
 **Last Updated**: March 7, 2026
